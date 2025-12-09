@@ -1,0 +1,62 @@
+/* Default Dark Mode Strategy: Smart Invert */
+
+html {
+  background-color: #ffffff !important; /* Ensure base is white so it inverts to black */
+}
+
+/* 
+   We use an attribute selector to toggle the mode. 
+   This is controlled by content.js 
+*/
+html[data-darkify-mode="active"] {
+  filter: invert(1) hue-rotate(180deg) !important;
+  transition: filter 0.3s ease !important;
+}
+
+/* Re-invert media to preserve original colors */
+html[data-darkify-mode="active"] img,
+html[data-darkify-mode="active"] video,
+html[data-darkify-mode="active"] picture,
+html[data-darkify-mode="active"] canvas,
+html[data-darkify-mode="active"] svg,
+html[data-darkify-mode="active"] iframe,
+html[data-darkify-mode="active"] [role="img"],
+html[data-darkify-mode="active"] .darkify-revert {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* 
+   Google Docs/Sheets Specifics 
+   
+   The canvas in Docs/Sheets represents the document. 
+   If we re-invert the canvas (as per the rule above), the document page becomes white again (bad).
+   So we MUST NOT re-invert the canvas for Google Docs/Sheets editors.
+*/
+
+/* Google Docs/Sheets Main Canvas */
+html[data-darkify-mode="active"] .kix-canvas-tile-content, /* Docs */
+html[data-darkify-mode="active"] .kix-appview-editor canvas, /* Docs container context */
+html[data-darkify-mode="active"] #kix-appview canvas, /* Docs ID */
+html[data-darkify-mode="active"] .grid-container canvas, /* Sheets */
+html[data-darkify-mode="active"] .waffle-grid-container canvas, /* Sheets */
+html[data-darkify-mode="active"] #waffle-grid-container canvas, /* Sheets ID */
+html[data-darkify-mode="active"] canvas.device-layer-target /* General Google Canvas */
+{
+  filter: none !important; /* Keep it inverted (Black page, White text) */
+}
+
+/* 
+   However, images INSIDE the canvas cannot be targeted by CSS. 
+   They will appear inverted. This is a known limitation of CSS-only dark mode on Canvas.
+*/
+
+/* Exclude full screen elements from double inversion if needed */
+:fullscreen {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+
+:fullscreen img,
+:fullscreen video {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+

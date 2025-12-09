@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Darkify</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Darkify</h1>
+    </div>
+    <div class="controls">
+      <div class="control-item">
+        <label for="toggle-global">Enable Dark Mode</label>
+        <label class="switch">
+          <input type="checkbox" id="toggle-global">
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="control-item">
+        <label for="toggle-site">Disable for this site</label>
+        <label class="switch">
+          <input type="checkbox" id="toggle-site">
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+    <div class="status" id="status-message"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
+
