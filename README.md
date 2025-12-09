@@ -1,10 +1,9 @@
 # Darkify Chrome Extension
 
-Darkify applies a smart dark mode to all web pages, with specific optimizations for Google Docs and Google Sheets.
+Darkify applies a smart dark mode to web pages, with specific optimizations for Google Docs and Google Sheets.
 
 ## Features
-- Global Dark Mode toggle.
-- Per-site exclusion list.
+- **Whitelist Mode**: Dark mode is disabled by default. You choose which sites to "Darkify".
 - Smart Invert logic (preserves images and colors).
 - Specific handling for Google Docs/Sheets canvas rendering.
 
@@ -15,15 +14,13 @@ Darkify applies a smart dark mode to all web pages, with specific optimizations 
 4. Select this folder (`Darkify`).
 
 ## Usage
-- Click the extension icon to open the popup.
-- Toggle "Enable Dark Mode" to switch globally.
-- Toggle "Disable for this site" to blacklist specific domains.
+- Navigate to a website you want to make dark (e.g., Google Docs).
+- Click the extension icon.
+- Toggle "Enable for this site".
+- The page will darken, and the extension will remember this preference.
 
 ## Icons
 Place your icon files in the `icons/` folder:
 - `icon16.png`
 - `icon48.png`
 - `icon128.png`
-
-(Defaults are currently placeholders in the manifest).
-

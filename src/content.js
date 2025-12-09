@@ -1,15 +1,13 @@
 // State
-let isEnabled = true;
-let isExcluded = false;
+let isWhitelisted = false;
 
 // Initialize
 function init() {
   const hostname = window.location.hostname;
   
-  chrome.storage.sync.get(['enabled', 'excludedSites'], (result) => {
-    isEnabled = result.enabled !== false; // Default true
-    const excludedSites = result.excludedSites || [];
-    isExcluded = excludedSites.includes(hostname);
+  chrome.storage.sync.get(['whitelistedSites'], (result) => {
+    const whitelistedSites = result.whitelistedSites || [];
+    isWhitelisted = whitelistedSites.includes(hostname);
     
     applyMode();
   });
@@ -19,7 +17,7 @@ function init() {
 function applyMode() {
   const html = document.documentElement;
   
-  if (isEnabled && !isExcluded) {
+  if (isWhitelisted) {
     html.setAttribute('data-darkify-mode', 'active');
     // Helper to ensure background is filled for full inversion
     if (document.body && getComputedStyle(document.body).backgroundColor === 'rgba(0, 0, 0, 0)') {
@@ -35,15 +33,12 @@ function applyMode() {
 
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'toggle') {
-    isEnabled = request.enabled;
-    applyMode();
-  } else if (request.action === 'checkExclusion') {
-    // Re-read exclusion list
+  if (request.action === 'checkWhitelist') {
+    // Re-read whitelist
     const hostname = window.location.hostname;
-    chrome.storage.sync.get(['excludedSites'], (result) => {
-      const excludedSites = result.excludedSites || [];
-      isExcluded = excludedSites.includes(hostname);
+    chrome.storage.sync.get(['whitelistedSites'], (result) => {
+      const whitelistedSites = result.whitelistedSites || [];
+      isWhitelisted = whitelistedSites.includes(hostname);
       applyMode();
     });
   }
@@ -58,4 +53,3 @@ observer.observe(document.documentElement, { childList: true, subtree: true });
 
 // Run init
 init();
-
