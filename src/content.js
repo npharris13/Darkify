@@ -1,12 +1,18 @@
 // State
 let isWhitelisted = false;
+let isGlobalDisabled = false;
 
 // Initialize
 function init() {
+  checkState();
+}
+
+function checkState() {
   const hostname = window.location.hostname;
   
-  chrome.storage.sync.get(['whitelistedSites'], (result) => {
+  chrome.storage.sync.get(['whitelistedSites', 'globalDisable'], (result) => {
     const whitelistedSites = result.whitelistedSites || [];
+    isGlobalDisabled = result.globalDisable === true;
     isWhitelisted = whitelistedSites.includes(hostname);
     
     applyMode();
@@ -17,30 +23,38 @@ function init() {
 function applyMode() {
   const html = document.documentElement;
   
-  if (isWhitelisted) {
-    html.setAttribute('data-darkify-mode', 'active');
-    // Helper to ensure background is filled for full inversion
-    if (document.body && getComputedStyle(document.body).backgroundColor === 'rgba(0, 0, 0, 0)') {
-       document.documentElement.style.backgroundColor = '#ffffff';
-    } else if (!document.body && getComputedStyle(document.documentElement).backgroundColor === 'rgba(0, 0, 0, 0)') {
-       document.documentElement.style.backgroundColor = '#ffffff';
-    }
-  } else {
-    html.removeAttribute('data-darkify-mode');
-    document.documentElement.style.backgroundColor = '';
+  // If globally disabled, remove dark mode regardless of whitelist
+  if (isGlobalDisabled) {
+    removeDarkMode(html);
+    return;
   }
+
+  if (isWhitelisted) {
+    addDarkMode(html);
+  } else {
+    removeDarkMode(html);
+  }
+}
+
+function addDarkMode(html) {
+  html.setAttribute('data-darkify-mode', 'active');
+  // Helper to ensure background is filled for full inversion
+  if (document.body && getComputedStyle(document.body).backgroundColor === 'rgba(0, 0, 0, 0)') {
+     document.documentElement.style.backgroundColor = '#ffffff';
+  } else if (!document.body && getComputedStyle(document.documentElement).backgroundColor === 'rgba(0, 0, 0, 0)') {
+     document.documentElement.style.backgroundColor = '#ffffff';
+  }
+}
+
+function removeDarkMode(html) {
+  html.removeAttribute('data-darkify-mode');
+  document.documentElement.style.backgroundColor = '';
 }
 
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'checkWhitelist') {
-    // Re-read whitelist
-    const hostname = window.location.hostname;
-    chrome.storage.sync.get(['whitelistedSites'], (result) => {
-      const whitelistedSites = result.whitelistedSites || [];
-      isWhitelisted = whitelistedSites.includes(hostname);
-      applyMode();
-    });
+  if (request.action === 'checkState') {
+    checkState();
   }
 });
 

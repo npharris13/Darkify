@@ -4,6 +4,18 @@
   "version": "1.0",
   "description": "Applies dark mode to any page, with special support for Google Docs and Sheets",
   "permissions": ["activeTab", "scripting", "storage"],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "commands": {
+    "toggle-dark-mode": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "Toggle Dark Mode for the current site"
+    }
+  },
   "action": {
     "default_popup": "src/popup/popup.html",
     "default_icon": {
@@ -26,4 +38,3 @@
     "128": "icons/icon128.png"
   }
 }
-

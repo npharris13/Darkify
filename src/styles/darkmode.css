@@ -1,7 +1,7 @@
 /* Default Dark Mode Strategy: Smart Invert */
 
 html {
-  background-color: #ffffff !important; /* Ensure base is white so it inverts to black */
+  background-color: #e0e0e0 !important; /* Ensure base is white so it inverts to black */
 }
 
 /* 
@@ -18,11 +18,22 @@ html[data-darkify-mode="active"] img,
 html[data-darkify-mode="active"] video,
 html[data-darkify-mode="active"] picture,
 html[data-darkify-mode="active"] canvas,
-html[data-darkify-mode="active"] svg,
 html[data-darkify-mode="active"] iframe,
-html[data-darkify-mode="active"] [role="img"],
 html[data-darkify-mode="active"] .darkify-revert {
   filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* 
+   Icon Handling:
+   We specifically DO NOT re-invert SVGs and elements with role="img".
+   This allows dark icons to invert to white (visible) on the dark background.
+   
+   We also explicitly prevent re-inversion for img tags that look like icons (SVGs, icons).
+*/
+html[data-darkify-mode="active"] img[src*=".svg"],
+html[data-darkify-mode="active"] img[src*="icon"],
+html[data-darkify-mode="active"] img[class*="icon"] {
+  filter: none !important;
 }
 
 /* 

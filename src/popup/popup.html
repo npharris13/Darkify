@@ -9,15 +9,34 @@
     <div class="header">
       <h1>Darkify</h1>
     </div>
+    
     <div class="controls">
+      <!-- Big Action Button -->
+      <button id="btn-site-toggle" class="site-toggle-btn">
+        Darkify this site
+      </button>
+
+      <!-- Global Disable Toggle -->
       <div class="control-item">
-        <label for="toggle-site">Enable for this site</label>
+        <label for="toggle-global-disable">Disable on all sites</label>
         <label class="switch">
-          <input type="checkbox" id="toggle-site">
+          <input type="checkbox" id="toggle-global-disable">
           <span class="slider round"></span>
         </label>
       </div>
     </div>
+
+    <hr class="divider">
+
+    <div class="whitelist-section">
+      <h3>Whitelisted Sites</h3>
+      <div class="add-site-row">
+        <input type="text" id="new-site-input" placeholder="example.com">
+        <button id="btn-add-site">Add</button>
+      </div>
+      <ul id="whitelist-container" class="whitelist-list"></ul>
+    </div>
+
     <div class="status" id="status-message"></div>
   </div>
   <script src="popup.js"></script>
