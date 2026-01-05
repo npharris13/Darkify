@@ -61,13 +61,13 @@ html[data-darkify-mode="active"] canvas.device-layer-target /* General Google Ca
    They will appear inverted. This is a known limitation of CSS-only dark mode on Canvas.
 */
 
-/* Exclude full screen elements from double inversion if needed */
-:fullscreen {
+/* Re-invert fullscreen elements when dark mode is active to preserve original colors */
+html[data-darkify-mode="active"] :fullscreen {
   filter: invert(1) hue-rotate(180deg) !important;
 }
 
-:fullscreen img,
-:fullscreen video {
-  filter: invert(1) hue-rotate(180deg) !important;
+html[data-darkify-mode="active"] :fullscreen img,
+html[data-darkify-mode="active"] :fullscreen video {
+  filter: none !important;
 }
 
