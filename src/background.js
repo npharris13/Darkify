@@ -1,5 +1,22 @@
 console.log('Service Worker: Background script loaded');
 
+// Default sites to enable dark mode on when extension is first installed
+const DEFAULT_WHITELISTED_SITES = [
+  'mail.google.com',
+  'docs.google.com',
+  'app.contentful.com'
+];
+
+// Set up default whitelist on first install
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === 'install') {
+    console.log('Extension installed, setting up default whitelist');
+    chrome.storage.sync.set({ whitelistedSites: DEFAULT_WHITELISTED_SITES }, () => {
+      console.log('Default whitelist set:', DEFAULT_WHITELISTED_SITES);
+    });
+  }
+});
+
 chrome.commands.onCommand.addListener((command) => {
   console.log('Command received:', command);
   

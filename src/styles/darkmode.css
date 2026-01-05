@@ -1,7 +1,7 @@
 /* Default Dark Mode Strategy: Smart Invert */
 
 html {
-  background-color: #e0e0e0 !important; /* Ensure base is white so it inverts to black */
+  background-color: #c8c8c8 !important; /* Light grey that inverts to dark grey (#373737) instead of black */
 }
 
 /* 
@@ -9,7 +9,7 @@ html {
    This is controlled by content.js 
 */
 html[data-darkify-mode="active"] {
-  filter: invert(1) hue-rotate(180deg) !important;
+  filter: invert(1) hue-rotate(180deg) contrast(0.85) !important;
   transition: filter 0.3s ease !important;
 }
 
@@ -20,7 +20,17 @@ html[data-darkify-mode="active"] picture,
 html[data-darkify-mode="active"] canvas,
 html[data-darkify-mode="active"] iframe,
 html[data-darkify-mode="active"] .darkify-revert {
-  filter: invert(1) hue-rotate(180deg) !important;
+  filter: invert(1) hue-rotate(180deg) contrast(1.18) !important; /* contrast(1.18) ≈ 1/0.85 to restore original contrast */
+}
+
+/* 
+   Emoji Handling:
+   Emojis are wrapped in .darkify-emoji spans by content.js
+   We re-invert them to preserve their original colors
+*/
+html[data-darkify-mode="active"] .darkify-emoji {
+  filter: invert(1) hue-rotate(180deg) contrast(1.18) !important;
+  display: inline; /* Ensure spans don't break text flow */
 }
 
 /* 
@@ -63,7 +73,7 @@ html[data-darkify-mode="active"] canvas.device-layer-target /* General Google Ca
 
 /* Re-invert fullscreen elements when dark mode is active to preserve original colors */
 html[data-darkify-mode="active"] :fullscreen {
-  filter: invert(1) hue-rotate(180deg) !important;
+  filter: invert(1) hue-rotate(180deg) contrast(1.18) !important; /* contrast(1.18) ≈ 1/0.85 to restore original contrast */
 }
 
 html[data-darkify-mode="active"] :fullscreen img,
