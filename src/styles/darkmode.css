@@ -1,14 +1,11 @@
 /* Default Dark Mode Strategy: Smart Invert */
 
-html {
-  background-color: #c8c8c8 !important; /* Light grey that inverts to dark grey (#373737) instead of black */
-}
-
 /* 
    We use an attribute selector to toggle the mode. 
    This is controlled by content.js 
 */
 html[data-darkify-mode="active"] {
+  background-color: #c8c8c8 !important; /* Light grey that inverts to dark grey (#373737) instead of black */
   filter: invert(1) hue-rotate(180deg) contrast(0.85) !important;
   transition: filter 0.3s ease !important;
 }
