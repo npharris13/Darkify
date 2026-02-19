@@ -126,6 +126,45 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
+/* Sub-app toggles (e.g. Google Docs / Slides / Sheets) */
+.subapp-header {
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.subapp-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.subapp-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  padding: 5px 2px;
+  color: #bbb;
+  border-radius: 4px;
+}
+
+.subapp-item.current {
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Green toggle switch variant used for enabling (not disabling) */
+.switch-enable input:checked + .slider {
+  background-color: #4caf50;
+}
+
+.switch-enable input:focus + .slider {
+  box-shadow: 0 0 1px #4caf50;
+}
+
 .status {
   font-size: 12px;
   color: #aaa;

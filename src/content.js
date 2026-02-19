@@ -11,14 +11,31 @@ function init() {
   checkState();
 }
 
-function checkState() {
+// Check if the current URL is covered by a whitelist entry.
+// Entries can be hostname-only (e.g. "mail.google.com") or
+// hostname + path-prefix (e.g. "docs.google.com/document").
+function isUrlInWhitelist(whitelistedSites) {
   const hostname = window.location.hostname;
-  
+  const pathname = window.location.pathname;
+
+  return whitelistedSites.some(entry => {
+    const slashIdx = entry.indexOf('/');
+    if (slashIdx === -1) {
+      return hostname === entry;
+    }
+    const entryHostname = entry.slice(0, slashIdx);
+    const entryPath = entry.slice(slashIdx);
+    if (hostname !== entryHostname) return false;
+    return pathname === entryPath || pathname.startsWith(entryPath + '/');
+  });
+}
+
+function checkState() {
   chrome.storage.sync.get(['whitelistedSites', 'globalDisable'], (result) => {
     const whitelistedSites = result.whitelistedSites || [];
     isGlobalDisabled = result.globalDisable === true;
-    isWhitelisted = whitelistedSites.includes(hostname);
-    
+    isWhitelisted = isUrlInWhitelist(whitelistedSites);
+
     applyMode();
   });
 }
