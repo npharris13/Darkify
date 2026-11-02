@@ -113,3 +113,33 @@ html[data-darkify-mode="active"][data-darkify-site="contentful"] :is(body, body 
   filter: none !important;
 }
 
+/*
+   Native text fields cannot contain the spans used to correct inline emojis.
+   Correct the whole control instead, and give it dark colors before filtering.
+   This also handles values changed by typing, pasting, or Contentful itself.
+   Restrict this to text controls: checkboxes, buttons, and color pickers keep
+   their existing treatment.
+*/
+html[data-darkify-mode="active"][data-darkify-site="contentful"] :is(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="tel"], textarea) {
+  filter: invert(1) hue-rotate(180deg) contrast(1.18) !important;
+  background-color: #121212 !important;
+  border-color: #343b41 !important;
+  color: #d1d5db !important;
+  caret-color: #d1d5db !important;
+  color-scheme: dark !important;
+}
+
+html[data-darkify-mode="active"][data-darkify-site="contentful"] :is(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="tel"], textarea):focus {
+  border-color: #7195ee !important;
+}
+
+html[data-darkify-mode="active"][data-darkify-site="contentful"] :is(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="tel"], textarea)::placeholder {
+  color: #969daa !important;
+  opacity: 1 !important;
+}
+
+/* A control directly beside a frame has no filtered ancestor to compensate. */
+html[data-darkify-mode="active"][data-darkify-site="contentful"] :is(body, body *):has(iframe) > :is(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="tel"], textarea) {
+  filter: none !important;
+}
+

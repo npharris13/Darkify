@@ -81,6 +81,10 @@ function addDarkMode(html) {
 
 // Wrap emojis in a span so they can be re-inverted to preserve original colors
 function wrapEmojisInTextNode(textNode) {
+  // Mutation records can refer to text removed by the app or already replaced
+  // by an earlier record in the same batch. Only process live, attached nodes.
+  if (!textNode.isConnected || !textNode.parentNode) return;
+
   const text = textNode.textContent;
   if (!emojiRegex.test(text)) return;
   
@@ -126,6 +130,8 @@ function wrapEmojisInTextNode(textNode) {
 
 // Walk through all text nodes in an element
 function processEmojisInElement(element) {
+  if (!element.isConnected) return;
+
   const walker = document.createTreeWalker(
     element,
     NodeFilter.SHOW_TEXT,
@@ -177,6 +183,7 @@ const observer = new MutationObserver((mutations) => {
   for (const mutation of mutations) {
     // Process added nodes for emojis
     for (const node of mutation.addedNodes) {
+      if (!node.isConnected) continue;
       if (node.nodeType === Node.ELEMENT_NODE) {
         // Skip our own emoji wrapper spans to avoid infinite loops
         if (node.classList?.contains('darkify-emoji')) continue;
