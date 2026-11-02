@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en" data-darkify-site="contentful" style="transition: none !important">
+<meta charset="utf-8">
+<title>Darkify Contentful preview regression checks</title>
+<link rel="stylesheet" href="../src/styles/darkmode.css">
+<style>
+  body { margin: 0; background: white; color: #202020; font: 16px system-ui; }
+  header, aside, nav, #results { padding: 20px; background: white; }
+  main { display: flex; min-height: 360px; }
+  aside { width: 260px; }
+  #preview-panel { flex: 1; }
+  iframe { display: block; width: 100%; height: 280px; border: 0; }
+  #direct-media { width: 32px; height: 32px; }
+</style>
+<body>
+  <header>Contentful editor — this header should be dark.</header>
+  <main>
+    <aside>Editor fields stay dark.<p>The preview should retain white, black, and saturated colors.</p></aside>
+    <section id="preview-panel">
+      <nav>Preview toolbar stays dark.</nav>
+      <div id="frame-slot"></div>
+    </section>
+  </main>
+  <img id="direct-media" alt="Unfiltered media" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath fill='red' d='M0 0h32v32H0z'/%3E%3C/svg%3E">
+  <section id="results" aria-live="polite">Running checks…</section>
+  <script>
+    const html = document.documentElement;
+    const slot = document.querySelector('#frame-slot');
+    const results = [];
+    const filter = element => getComputedStyle(element).filter;
+    const assert = (condition, label) => {
+      results.push(`${condition ? 'PASS' : 'FAIL'}: ${label}`);
+      if (!condition) throw new Error(label);
+    };
+    const makeFrame = () => {
+      const frame = document.createElement('iframe');
+      frame.title = 'Live preview color reference';
+      // A sandboxed unique origin also checks that no access to the frame's DOM is needed.
+      frame.setAttribute('sandbox', '');
+      frame.srcdoc = '<body style="margin:0;background:white;color:black;font:20px system-ui"><p style="padding:16px">Live preview: original colors</p><div style="display:flex;height:120px"><div style="flex:1;background:#f00"></div><div style="flex:1;background:#0f0"></div><div style="flex:1;background:#00f"></div><div style="flex:1;background:#000"></div><div style="flex:1;background:#fff"></div></div></body>';
+      return frame;
+    };
+    const assertUnfiltered = (frame, label) => {
+      let current = frame;
+      while (current) {
+        assert(filter(current) === 'none', `${label}: ${current.tagName} ${current.id || ''} has no filter`);
+        current = current.parentElement;
+      }
+    };
+    try {
+      html.setAttribute('data-darkify-mode', 'active');
+      assert(filter(html).includes('invert(1)'), 'Contentful without frames uses normal dark mode');
+
+      let frame = makeFrame();
+      slot.append(frame);
+      assertUnfiltered(frame, 'Dynamically inserted preview');
+      assert(filter(document.querySelector('aside')).includes('invert(1)'), 'Editor branch stays dark');
+      assert(filter(document.querySelector('nav')).includes('invert(1)'), 'Preview toolbar stays dark');
+      assert(filter(document.querySelector('aside p')) === 'none', 'Editor descendants are not filtered twice');
+      assert(filter(document.querySelector('#direct-media')) === 'none', 'Media outside filtered branches stays unfiltered');
+
+      const editorImage = document.querySelector('#direct-media').cloneNode();
+      editorImage.removeAttribute('id');
+      // Avoid the pre-existing SVG/icon exception, to test media counter-filtering.
+      editorImage.removeAttribute('src');
+      document.querySelector('aside').append(editorImage);
+      assert(filter(editorImage).includes('contrast(1.18)'), 'Media inside editor keeps its counter-filter');
+
+      const second = makeFrame();
+      document.querySelector('aside').append(second);
+      assertUnfiltered(second, 'Second embedded frame');
+      assertUnfiltered(frame, 'Original preview with two frames');
+      second.remove();
+      assert(filter(document.querySelector('aside')).includes('invert(1)'), 'Editor filter returns after its frame is removed');
+
+      frame.remove();
+      assert(filter(html).includes('invert(1)'), 'Closing preview restores normal root filter');
+      frame = makeFrame();
+      slot.append(frame);
+      assertUnfiltered(frame, 'Reopened preview');
+
+      html.removeAttribute('data-darkify-mode');
+      assertUnfiltered(frame, 'Dark mode disabled');
+      assert(filter(document.querySelector('aside')) === 'none', 'Disabling dark mode clears editor filter');
+
+      html.setAttribute('data-darkify-mode', 'active');
+      html.removeAttribute('data-darkify-site');
+      assert(filter(html).includes('invert(1)'), 'Other sites keep the original root filter');
+      assert(filter(frame).includes('contrast(1.18)'), 'Other sites keep the original iframe counter-filter');
+      html.setAttribute('data-darkify-site', 'contentful');
+      assertUnfiltered(frame, 'Re-enabled Contentful exemption');
+    } catch (error) {
+      results.push(`Stopped: ${error.message}`);
+    }
+    document.querySelector('#results').replaceChildren(...results.map(result => {
+      const line = document.createElement('div');
+      line.textContent = result;
+      return line;
+    }));
+    document.title = `${results.some(result => result.startsWith('FAIL')) ? 'FAIL' : 'PASS'} — Darkify Contentful preview`;
+  </script>
+</body>
+</html>

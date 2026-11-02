@@ -78,3 +78,38 @@ html[data-darkify-mode="active"] :fullscreen video {
   filter: none !important;
 }
 
+/*
+   Contentful: preserve the actual colors of embedded previews.
+   A descendant cannot opt out of an ancestor's filter. Counter-filtering the
+   iframe also loses colors through clipping, especially with contrast > 1.
+   Instead, filter only branches that do not contain a frame. All Contentful
+   iframes are exempt so this works with any preview URL and app markup.
+*/
+html[data-darkify-mode="active"][data-darkify-site="contentful"]:has(iframe) {
+  filter: none !important;
+  transition: none !important;
+  background-color: #171717 !important;
+}
+
+/* Keep the entire path from the body to each iframe free of filters. */
+html[data-darkify-mode="active"][data-darkify-site="contentful"] :is(body, body *):has(iframe) {
+  filter: none !important;
+  background-color: #171717 !important;
+}
+
+/* Each sibling branch is filtered once; media inside it uses the usual undo. */
+html[data-darkify-mode="active"][data-darkify-site="contentful"] :is(body, body *):has(iframe) > :not(iframe):not(:has(iframe)) {
+  filter: invert(1) hue-rotate(180deg) contrast(0.85) !important;
+}
+
+/* Media directly on an unfiltered path needs neither filter nor counter-filter. */
+html[data-darkify-mode="active"][data-darkify-site="contentful"] :is(body, body *):has(iframe) > :is(img, video, picture, canvas, .darkify-revert, .darkify-emoji),
+html[data-darkify-mode="active"][data-darkify-site="contentful"] iframe {
+  filter: none !important;
+}
+
+/* A picture/revert wrapper on that path is already exempt, including its media. */
+html[data-darkify-mode="active"][data-darkify-site="contentful"] :is(body, body *):has(iframe) > :is(picture, .darkify-revert) :is(img, video, picture, canvas, .darkify-emoji) {
+  filter: none !important;
+}
+

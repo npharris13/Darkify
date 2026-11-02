@@ -8,6 +8,11 @@ const emojiRegex = /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Emoji_Modifier_Ba
 
 // Initialize
 function init() {
+  // Keep Contentful's embedded previews outside the page's color filters.
+  // CSS :has() also handles frames added or removed during client-side navigation.
+  if (window.location.hostname === 'app.contentful.com') {
+    document.documentElement.setAttribute('data-darkify-site', 'contentful');
+  }
   checkState();
 }
 
